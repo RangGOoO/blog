@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.contents.ContentDAOinter">
+	<insert id="create" parameterType="dev.mvc.contents.ContentVO">
+		INSERT INTO contents(adminno,
+		cateno, title, content, passwd, word, file1, file1saved, thumb1,
+		size1, rdate, contentno)
+		VALUES(#{adminno}, #{cateno}, #{title}, #{content},
+		#{passwd}, #{word}, #{file1}, #{file1saved}, #{thumb1} ,#{size1},
+		sysdate, content_seq.nextval)
+	</insert>
+	<select id="list_by_cateno" parameterType="int"
+		resultType="dev.mvc.contents.ContentVO">
+		select *
+		from contents
+		where cateno = #{cateno}
+		ORDER BY rdate desc
+	</select>
+	<select id="read_content" parameterType="int"
+		resultType="dev.mvc.contents.ContentVO">
+		SELECT contentno, adminno, cateno, title, content,
+		recomcnt, clickcnt,
+		replycnt, passwd, word, rdate, file1, file1saved,
+		thumb1, size1
+		FROM contents
+		WHERE contentno = #{contentno}
+	</select>
+	<select id="search_count" parameterType="HashMap" resultType="int">
+		select COUNT(*) as cnt
+		from contents
+		<choose>
+			<when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
+				WHERE cateno=#{cateno}
+			</when>
+			<otherwise> <!-- 검색하는 경우 -->
+				WHERE cateno=#{cateno} AND (title LIKE '%' || #{word} || '%'
+				OR
+				content LIKE '%' || #{word} || '%'
+				OR word LIKE '%' || #{word} ||
+				'%')
+			</otherwise>
+		</choose>
+	</select>
+	<select id="list_by_cateno_paging" parameterType="HashMap"
+		resultType="dev.mvc.contents.ContentVO">
+		SELECT *
+		FROM (
+				SELECT contents.*, rownum as r
+				FROM (
+						SELECT *
+						FROM contents
+						<choose>
+							<when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
+								WHERE cateno=#{cateno}
+							</when>
+							<otherwise>
+								WHERE cateno=#{cateno} AND (title LIKE '%' || #{word} || '%' 
+                                                            OR content LIKE '%' || #{word} || '%' 
+                                                            OR word LIKE '%' || #{word} || '%')		
+							</otherwise>
+						</choose>
+						ORDER BY rdate desc
+					  ) contents
+			  )
+	    where <![CDATA[ r >= #{start_num} AND r <= #{end_num} ]]>
+	</select>
+	<select id="pwd_check" resultType="int" parameterType="HashMap">
+		select count(*) as cnt
+		from contents
+		where contentno = #{contentno} and passwd=#{passwd}
+	</select>
+	<update id="content_update" parameterType="dev.mvc.contents.ContentVO">
+	 UPDATE contents
+	 SET title=#{title}, content=#{content}, word=#{word}
+   	 WHERE contentno = #{contentno}
+	</update>
+	<delete id="content_delete" parameterType="int">
+	  DELETE FROM contents
+	  WHERE contentno=#{contentno}
+	</delete>
+	<update id="update_recom" parameterType="int">
+		update contents
+		set RECOMCNT = RECOMCNT + 1
+		WHERE contentno = #{contentno}
+	</update>
+	<update id="update_clickcnt" parameterType="int">
+		update contents
+		set CLICKCNT = CLICKCNT + 1
+		WHERE contentno = #{contentno}
+	</update>
+</mapper>

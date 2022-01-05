@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.member.MemberDAOinter">
+	<select id="IDcheck" parameterType="String" resultType="int">
+		SELECT COUNT(id) as cnt
+		FROM member
+		WHERE id=#{id}
+	</select>
+	<insert id="memeber_create" parameterType="dev.mvc.member.MemberVO">
+		insert into MEMBER(id, passwd, name, phone_num, address, address2, join_date) 
+		values(#{id}, #{passwd}, #{name}, #{phone_num}, #{address}, #{address2}, sysdate)
+	</insert>
+	<select id="member_list" resultType="dev.mvc.member.MemberVO">
+		SELECT *
+		FROM MEMBER
+		ORDER BY MEMBERNO ASC
+	</select>
+	<select id="login" resultType="int" parameterType="Map">
+		SELECT COUNT(*) as cnt
+		FROM MEMBER
+		where id = #{id} and passwd=#{passwd}
+	</select> 
+	<select id="readbyid" resultType="dev.mvc.member.MemberVO" parameterType="String">
+		SELECT * 
+		FROM MEMBER
+		WHERE id=#{id}
+	</select>
+</mapper>

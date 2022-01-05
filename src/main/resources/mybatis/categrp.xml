@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.categrp.CategrpDAOInter">
+	<!-- 등록, 입력: CategrpVO, 리턴: 등록된 레코드 갯수 -->
+	<insert id="create" parameterType="dev.mvc.categrp.CategrpVO">
+		INSERT INTO categroup(categrpno, catename, seq, cdate)
+		VALUES(grp_seq.nextval, #{catename}, #{seq}, sysdate)
+	</insert>
+	<select id="getData" resultType="dev.mvc.categrp.CategrpVO">
+		SELECT categrpno, catename ,seq, cdate
+		FROM categroup
+		order by seq asc
+	</select>
+	<select id="read" resultType="dev.mvc.categrp.CategrpVO" parameterType="int">
+		SELECT categrpno, catename ,seq, cdate
+		FROM categroup
+		WHERE categrpno=#{categrpno}
+	</select>
+	<update id="update" parameterType="dev.mvc.categrp.CategrpVO">
+		update categroup set
+		catename=#{catename}, seq=#{seq} where categrpno=#{categrpno}
+	</update>
+	<delete id="delete" parameterType="int">
+		DELETE FROM categroup WHERE categrpno=#{categrpno}
+	</delete>
+</mapper> 
